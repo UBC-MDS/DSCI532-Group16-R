@@ -11,15 +11,24 @@ app$layout(htmlDiv(list(
     dccTab(label='Tab one', children=list(
       htmlDiv(list(
         htmlLabel('Slider'),
-        dccSlider(
-          min = 1,
-          max = 10,
-          marks = list(
-            "1" = "1°C",
-            "5" = "5°C",
-            "10" = "10°C"
+        dccRangeSlider(
+          id='age-range-slider',
+          min=18,
+          max=75,
+          step=2,
+          marks=list(
+            "18" = "18",
+            "20" = "20",
+            "30" = "30",
+            "40" = "40",
+            "50" = "50",
+            "60" = "60",
+            "70" = "70",
+            "75" = "75"
           ),
-          value = 5)
+          value=list(18, 75)
+        ),
+        htmlDiv(id='output-container-range-slider')
             )
           )
         )
@@ -29,3 +38,5 @@ app$layout(htmlDiv(list(
     ))
   ))
 ))
+
+app$run_server(debug = T)
