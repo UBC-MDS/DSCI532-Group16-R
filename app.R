@@ -114,7 +114,7 @@ content <- htmlDiv(list(
       htmlBr(),
       htmlBr(),
       # Map figure
-      dccGraph(id='map-plot', config = list({'scrollZoom'= False})),
+      dccGraph(id='map-plot'),
 
       # Options Bar Plot
       dccGraph(id = 'option_bar_plot', style=list('height'=250, 'width'= 900, 'margin' = 100)),
@@ -211,7 +211,6 @@ app$callback(
       geom_boxplot() +
       coord_flip() +
       labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
-    
     
     ggplotly(p)
   }
