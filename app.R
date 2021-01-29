@@ -117,4 +117,4 @@ app$layout(htmlDiv(
 ))
 
 
-app$run_server(debug = T)
+app$run_server(debug = T, host='0.0.0.0')
