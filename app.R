@@ -6,12 +6,23 @@ library(ggplot2)
 library(tidyverse)
 library(plotly)
 
+
 app <- Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
 
 
 data = read_csv('data/processed/processed_survey.csv')
 statedf <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
 
+dropdown_states <- unique(data[c("state_fullname", "state")]) %>%
+    arrange(state_fullname)
+
+ls_state <- list(list(label='All',value='ALL'))
+for (row in 1:nrow(dropdown_states)) {
+   fn <- dropdown_states[row, 'state_fullname'] %>% pull(1)
+   abbrev <- dropdown_states[row, 'state'] %>% pull(1)
+   ls_state <- append(ls_state, list(list(label=fn, value=abbrev)))   
+}
+dropdown_state_ls <- ls_state
 
 SIDEBAR_STYLE <- list(
     'position'="fixed",
@@ -30,9 +41,10 @@ sidebar <- htmlDiv(list(
         htmlH4(htmlLabel('State Selection')), 
         dccDropdown(
             id = 'state_selector',
-            options=list(), #{'label': state_full, 'value': state_abbrev} for state_full, state_abbrev in list(zip(df_states.state_fullname, df_states.state))],
-            value='AL', 
+            options=dropdown_state_ls, #{'label': state_full, 'value': state_abbrev} for state_full, state_abbrev in list(zip(df_states.state_fullname, df_states.state))],
+            value='ALL', 
             multi=FALSE,
+            clearable=FALSE,
             style=list('height'= '30px', 'width'= '250px')
             ),        
         htmlBr(),       
@@ -99,7 +111,8 @@ content <- htmlDiv(list(
   htmlBr(),
   dccTabs(id="tabs", children=list(
     dccTab(label='Employee perception', children=list(
-      
+      htmlBr(),
+      htmlBr(),
       # Map figure
       dccGraph(id='map-plot'),
 
@@ -110,7 +123,7 @@ content <- htmlDiv(list(
       dccGraph(id = 'discuss_w_supervisor')
         )
     ),
-    dccTab(label='Employer support', children=list(
+    dccTab(label='Employer support', children=list(      
       )
     ))
   )),
@@ -133,13 +146,15 @@ app$callback(
   output('map-plot', 'figure'),
   list(input('age-range-slider', 'value'),
        input('gender_checklist', 'value'),
-       input('self_emp_checklist', 'value')),
-  function(age_chosen, gender_chosen, self_emp_chosen) {
+       input('self_emp_checklist', 'value'),
+       input('state_selector', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
     
     # Filter data
     filtered_data <- data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                        Gender %in% gender_chosen &
-                                       self_employed %in% self_emp_chosen)
+                                       self_employed %in% self_emp_chosen &
+                                       (  state_chosen == 'ALL' | state %in% state_chosen))
     
     # Create frequencydf
     colnames(filtered_data)[6] <- "code"
@@ -152,7 +167,7 @@ app$callback(
     p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states',
                  z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%
                 layout(geo = list(scope = 'usa', projection = list(type = 'albers usa')), 
-                title = 'Frequency of mental health condition', clickmode = 'event+select')
+                title = paste(str(state_chosen),'Frequency of mental health condition'), clickmode = 'event+select')
     
     ggplotly(p)
   }
@@ -161,15 +176,17 @@ app$callback(
 #Options Barplot Callback
 app$callback(
   output('option_bar_plot', 'figure'),
-  list(input('age-range-slider', 'value'),
-       # input('state_selector', 'value'),
+  list(input('age-range-slider', 'value'),       
        input('gender_checklist', 'value'),
-       input('self_emp_checklist', 'value')),
-  function(age_chosen, gender_chosen, self_emp_chosen) {
+       input('self_emp_checklist', 'value'),
+       input('state_selector', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                   # state == state_chosen &
                                   Gender %in% gender_chosen &
-                                  self_employed %in% self_emp_chosen)) +
+                                  self_employed %in% self_emp_chosen &
+                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
+                                  )) +
       aes(y = benefits) +
       geom_bar() +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
@@ -180,15 +197,16 @@ app$callback(
 #Discuss w supervisor Callback
 app$callback(
   output('discuss_w_supervisor', 'figure'),
-  list(input('age-range-slider', 'value'),
-       # input('state_selector', 'value'),
+  list(input('age-range-slider', 'value'),       
        input('gender_checklist', 'value'),
-       input('self_emp_checklist', 'value')),
-  function(age_chosen, gender_chosen, self_emp_chosen) {
+       input('self_emp_checklist', 'value'),
+       input('state_selector', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] &
                              # state == state_chosen &
                              Gender %in% gender_chosen &
-                             self_employed %in% self_emp_chosen)) +
+                             self_employed %in% self_emp_chosen  &
+                                  (    state_chosen == 'ALL' |  state %in% state_chosen) )) +
       aes(x = supervisor, y = Age) +
       geom_boxplot() +
       coord_flip() +
