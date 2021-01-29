@@ -114,13 +114,13 @@ content <- htmlDiv(list(
       htmlBr(),
       htmlBr(),
       # Map figure
-      dccGraph(id='map-plot'),
+      dccGraph(id='map-plot', config = list({'scrollZoom'= False})),
 
       # Options Bar Plot
-      dccGraph(id = 'option_bar_plot'),
+      dccGraph(id = 'option_bar_plot', style=list('height'=250, 'width'= 900, 'margin' = 100)),
 
       # Discuss mental issues Bar Plot
-      dccGraph(id = 'discuss_w_supervisor')
+      dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
         )
     ),
     dccTab(label='Employer support', children=list(      
@@ -210,8 +210,9 @@ app$callback(
       aes(x = supervisor, y = Age) +
       geom_boxplot() +
       coord_flip() +
-      # coord_cartesian(xlim=c(18,80)) +
-      labs(x = "Supervisor", title = "Would employee be willing to discuss mental health issues with supervisor?")
+      labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
+    
+    
     ggplotly(p)
   }
 )
