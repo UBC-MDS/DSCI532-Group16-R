@@ -5,6 +5,7 @@ library(dashBootstrapComponents)
 library(ggplot2)
 library(tidyverse)
 library(plotly)
+
 app <- Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
 
 
@@ -35,6 +36,8 @@ sidebar <- htmlDiv(list(
             style=list('height'= '30px', 'width'= '250px')
             ),        
         htmlBr(),       
+        
+        #Age Filter
         htmlH4(htmlLabel('Age')),
         dccRangeSlider(
           id='age-range-slider',
@@ -52,6 +55,7 @@ sidebar <- htmlDiv(list(
           ),
           value=list(18, 75)),
           htmlBr(),
+        
           # Gender Filter Checklist
           htmlH4(htmlLabel('Gender')),
           dccChecklist(
@@ -64,6 +68,7 @@ sidebar <- htmlDiv(list(
               labelStyle = list('display'='block')
           ),
           htmlBr(),
+        
           # Self-Employed Filter Checklist
           htmlH4(htmlLabel('Self-Employed')),
           dccChecklist(
@@ -97,6 +102,13 @@ content <- htmlDiv(list(
       
       dccGraph(id='plot-area')
       
+
+      
+      # Options Bar Plot
+      dccGraph(id = 'option_bar_plot'),
+
+      # Discuss mental issues Bar Plot
+      dccGraph(id = 'discuss_w_supervisor')
         )
     ),
     dccTab(label='Tab two', children=list(
@@ -147,5 +159,43 @@ app$callback(
 }
 )
 
+#Options Barplot Callback
+app$callback(
+  output('option_bar_plot', 'figure'),
+  list(input('age-range-slider', 'value'),
+       # input('state_selector', 'value'),
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen) {
+    p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+                                  # state == state_chosen &
+                                  Gender %in% gender_chosen &
+                                  self_employed %in% self_emp_chosen)) +
+      aes(y = benefits) +
+      geom_bar() +
+      labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
+    ggplotly(p)
+  }
+)
+
+#Discuss w supervisor Callback
+# app$callback(
+#   output('discuss_w_supervisor', 'figure'),
+#   list(input('age-range-slider', 'value'),
+#        # input('state_selector', 'value'),
+#        input('gender_checklist', 'value'),
+#        input('self_emp_checklist', 'value')),
+#   function(age_chosen, gender_chosen, self_emp_chosen) {
+#     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+#                              # state == state_chosen &
+#                              Gender %in% gender_chosen &
+#                              self_employed %in% self_emp_chosen)) + 
+#       aes(x = Age, y = supervisor) +
+#       geom_boxplot() + 
+#       coord_cartesian(xlim=c(18,80)) +
+#       labs(y = "Supervisor", title = "Would employee be willing to discuss mental health issues with supervisor?")
+#     ggplotly(p)
+#   }
+# )
 
 app$run_server(debug = T, host='0.0.0.0')
