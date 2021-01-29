@@ -18,15 +18,21 @@ There are two suggested ways to run this analysis:
 
 ### 1. Deploy and run on Heroku
 
-This dashboard is hosted on Heroku: https://it-mental-health-dash.herokuapp.com/ 
-The heroku repository URL is: https://git.heroku.com/it-mental-health-dash.git
+This dashboard is hosted on Heroku: https://it-mental-health-dash-r.herokuapp.com/ 
+The heroku repository URL is: https://git.heroku.com/it-mental-health-dash-r.git
 
 #### Deploy on to your own Heroku Account
 Once you've cloned this github repository, you can do the following from the root of the repo:
 ```bash
 heroku create [app_name]
+heroku stack:set container.
 git push heroku main
-heroku ps:scale web=1
+
+#Then run bash to run the webapp
+heroku run bash
+
+#Run the dashr app script
+>$ Rscript app.R
 ```
 #### If you make changes and want to redeply to Heroku
 Note this does not include details on fork and branch handling in github.
@@ -35,35 +41,38 @@ git status
 git add .
 git commit -m "change description"
 git push heroku main
-heroku ps:scale web=1
+
+#if the server is offline, you can start it again via bash
+
+#Then run bash to run the webapp
+heroku run bash
+
+#Run the dashr app script
+>$ Rscript app.R
 ```
 ### 2. Run without Heroku
 
 After cloning this repository and installing the python dependencies below, run the following from the root of this repo:
 
 ```bash
-python src/app.py
+Rscript app.R
 ```
 
 
 ## Dependencies
 
-### Python
+### R
 
-We are providing you with a `pip` environment file which is available [here](requirements.txt). You can download this file and install dependencies in your desired environment.
+We are providing you with the R packages that must be installed 
 
+- dash
+- readr
+- here
+- ggthemes
+- tidyverse
+- remotes
+
+Then via remotes,
 ```
-pip install -r requirements.txt
+remotes::install_github('facultyai/dash-bootstrap-components@r-release')
 ```
-
-```
-pandas
-gunicorn
-altair
-dash==1.18.1
-dash_bootstrap_components
-plotly==4.14.3
-vega_datasets
-```
-
-
