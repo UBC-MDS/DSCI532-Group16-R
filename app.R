@@ -4,10 +4,14 @@ library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(ggplot2)
 library(tidyverse)
+library(plotly)
+
 app <- Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
 
 
 data = read_csv('data/processed/processed_survey.csv')
+statedf <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+
 
 SIDEBAR_STYLE <- list(
     'position'="fixed",
@@ -32,6 +36,8 @@ sidebar <- htmlDiv(list(
             style=list('height'= '30px', 'width'= '250px')
             ),        
         htmlBr(),       
+        
+        #Age Filter
         htmlH4(htmlLabel('Age')),
         dccRangeSlider(
           id='age-range-slider',
@@ -40,7 +46,6 @@ sidebar <- htmlDiv(list(
           step=2,
           marks=list(
             "18" = "18",
-            "20" = "20",
             "30" = "30",
             "40" = "40",
             "50" = "50",
@@ -50,26 +55,28 @@ sidebar <- htmlDiv(list(
           ),
           value=list(18, 75)),
           htmlBr(),
+        
           # Gender Filter Checklist
           htmlH4(htmlLabel('Gender')),
           dccChecklist(
               id = 'gender_checklist',
               options = list(
-                  list('label'='Male', 'value' ='Male'),
-                  list('label' = 'Female  ',  'value' = 'Female'),
-                  list('label' = 'Other  ', 'value' = 'Other')),
+                  list('label'=' Male', 'value' ='Male'),
+                  list('label' = ' Female',  'value' = 'Female'),
+                  list('label' = ' Other', 'value' = 'Other')),
               value = list('Male', 'Female', 'Other'),
               labelStyle = list('display'='block')
           ),
           htmlBr(),
+        
           # Self-Employed Filter Checklist
           htmlH4(htmlLabel('Self-Employed')),
           dccChecklist(
               id = 'self_emp_checklist',
               options = list(
-                  list('label' = 'Yes  ', 'value' = 'Yes'),
-                  list('label' = 'No  ', 'value' = 'No'),
-                  list('label' = 'N/A  ', 'value' = 'N/A')),
+                  list('label' = ' Yes', 'value' = 'Yes'),
+                  list('label' = ' No', 'value' = 'No'),
+                  list('label' = ' N/A', 'value' = 'N/A')),
               value = list('Yes', 'No', 'N/A'),            
               labelStyle = list('display'='block')
               
@@ -91,13 +98,19 @@ content <- htmlDiv(list(
   htmlH2('Employee Mental Health Survey in the US'),
   htmlBr(),
   dccTabs(id="tabs", children=list(
-    dccTab(label='Tab one', children=list(
+    dccTab(label='Employee perception', children=list(
+      
+      # Map figure
+      dccGraph(id='map-plot'),
 
-      htmlLabel('hello')
+      # Options Bar Plot
+      dccGraph(id = 'option_bar_plot'),
 
+      # Discuss mental issues Bar Plot
+      dccGraph(id = 'discuss_w_supervisor')
         )
     ),
-    dccTab(label='Tab two', children=list(
+    dccTab(label='Employer support', children=list(
       )
     ))
   )),
@@ -116,5 +129,73 @@ app$layout(htmlDiv(
  
 ))
 
+app$callback(
+  output('map-plot', 'figure'),
+  list(input('age-range-slider', 'value'),
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen) {
+    
+    # Filter data
+    filtered_data <- data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+                                       Gender %in% gender_chosen &
+                                       self_employed %in% self_emp_chosen)
+    
+    # Create frequencydf
+    colnames(filtered_data)[6] <- "code"
+    grouped_data <- filtered_data %>%
+      group_by(code) %>%
+      summarize(mental_health_condition = sum(has_condition))
+    frequencydf <- left_join(statedf, grouped_data, by = 'code')
+
+    # Plot map
+    p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states',
+                 z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%
+                layout(geo = list(scope = 'usa', projection = list(type = 'albers usa')), 
+                title = 'Frequency of mental health condition', clickmode = 'event+select')
+    
+    ggplotly(p)
+  }
+)
+
+#Options Barplot Callback
+app$callback(
+  output('option_bar_plot', 'figure'),
+  list(input('age-range-slider', 'value'),
+       # input('state_selector', 'value'),
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen) {
+    p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+                                  # state == state_chosen &
+                                  Gender %in% gender_chosen &
+                                  self_employed %in% self_emp_chosen)) +
+      aes(y = benefits) +
+      geom_bar() +
+      labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
+    ggplotly(p)
+  }
+)
+
+#Discuss w supervisor Callback
+app$callback(
+  output('discuss_w_supervisor', 'figure'),
+  list(input('age-range-slider', 'value'),
+       # input('state_selector', 'value'),
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value')),
+  function(age_chosen, gender_chosen, self_emp_chosen) {
+    p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] &
+                             # state == state_chosen &
+                             Gender %in% gender_chosen &
+                             self_employed %in% self_emp_chosen)) +
+      aes(x = supervisor, y = Age) +
+      geom_boxplot() +
+      coord_flip() +
+      # coord_cartesian(xlim=c(18,80)) +
+      labs(x = "Supervisor", title = "Would employee be willing to discuss mental health issues with supervisor?")
+    ggplotly(p)
+  }
+)
 
 app$run_server(debug = T, host='0.0.0.0')
