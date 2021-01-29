@@ -1,6 +1,6 @@
 # Reflection
 
-For this milestone our group has successfully implemented a working skeleton of our proposed dashboard in R and added some minor improvements in response to suggestoins.
+For this milestone our group has successfully implemented a working skeleton of our proposed dashboard in R and added some minor improvements in response to suggestions.
 
 ### App Overview
 
@@ -16,11 +16,13 @@ All four filters are used as callbacks for the two charts and one map. The age, 
 
 -    Some of the styling issues mentioned by Joel and peers were fixed automatically in R, these include:
 
-        - Counts showing decimal points in our bar plots 
+        - Colour differentiation in map visualiztion for states with 0 or NA values.
+
+        - Counts showing decimal points in the bar plots 
   
         - Lack of space between checkboxes and selection text 
   
-        - Full screen alignment is now centered for the map
+        - Full screen alignment is now centered for the map and charts
 
 ### App Strengths and Limitations
 
@@ -33,7 +35,7 @@ For future milestones, we aim to implement the following improvements to the das
 
 -   Add content to the second tab if we find more useful visualizations to bring to life more anlaysis from the data, these would likely be comparison plots.
 
--   Update the map drop down to be a multi-selection dropdown.
+-   Update the state drop down to be a multi-selection dropdown.
 
 -   Two way integration between map and some charts, ie when states are selected from the map, the chart use those selections as a filter.
 
