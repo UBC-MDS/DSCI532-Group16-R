@@ -53,19 +53,19 @@ sidebar <- htmlDiv(list(
         htmlH4(htmlLabel('Age')),
         dccRangeSlider(
           id='age-range-slider',
-          min=18,
+          min=15,
           max=75,
           step=2,
           marks=list(
-            "18" = "18",
-            "30" = "30",
-            "40" = "40",
-            "50" = "50",
-            "60" = "60",
-            "70" = "70",
+            "15" = "15",
+            "25" = "25",
+            "35" = "35",
+            "45" = "45",
+            "55" = "55",
+            "65" = "65",
             "75" = "75"
           ),
-          value=list(18, 75)),
+          value=list(15, 75)),
           htmlBr(),
         
           # Gender Filter Checklist
