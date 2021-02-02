@@ -188,7 +188,7 @@ app$callback(
                                   (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
                                   )) +
       aes(y = benefits) +
-      geom_bar() +
+      geom_bar(color = '#2166AC', fill = '#497EE8') +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
     ggplotly(p)
   }
@@ -208,7 +208,7 @@ app$callback(
                              self_employed %in% self_emp_chosen  &
                                   (    state_chosen == 'ALL' |  state %in% state_chosen) )) +
       aes(x = supervisor, y = Age) +
-      geom_boxplot() +
+      geom_boxplot(color = '#2166AC', fill = '#497EE8') +
       coord_flip() +
       labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
     
