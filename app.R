@@ -128,7 +128,7 @@ content <- htmlDiv(list(
       htmlBr(),
       
       # Facet Dropdown button
-      htmlH3('View results by:'),
+      htmlH3('View survey results by:'),
       dccDropdown(
         id = 'facet_selector',
         options=list(
@@ -254,10 +254,13 @@ app$callback(
       aes_string(y = 'wellness_program', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
-      labs(x = '', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
+      labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
       theme(legend.position = 'none')
     
-    ggplotly(p, tooltip = 'count')
+    #Resolve the x axis overlapping facet tick issue - Remove if Count of Records is not necessary in this plot
+    gp <- ggplotly(p, tooltip = 'count')
+    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.15
+    gp
   }
 )
 
@@ -279,10 +282,13 @@ app$callback(
       aes_string(y = 'seek_help', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
-      labs(x = '', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
+      labs(x = 'Count of Records', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
       theme(legend.position = 'none')
     
-    ggplotly(p, tooltip = 'count')
+    #Resolve the x axis overlapping facet tick issue
+    gp <- ggplotly(p, tooltip = 'count')
+    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.15
+    gp
   }
 )
 
