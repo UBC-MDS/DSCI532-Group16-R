@@ -123,7 +123,27 @@ content <- htmlDiv(list(
       dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
         )
     ),
-    dccTab(label='Employer support', children=list(      
+    dccTab(label='Employer support', children=list(     
+      htmlBr(),
+      htmlBr(),
+      
+      #Facet Plot
+      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 1200, 'margin' = 100)),
+      
+      
+      htmlH3('View results by:'),
+      dccDropdown(
+        id = 'facet_selector',
+        options=list(
+          list(label = 'Age', value = 'age_group'),
+          list(label = 'Gender', value = 'Gender'),
+          list(label = 'Self-Employed', value = 'self_employed')
+          ),
+        value='age_group', 
+        multi=FALSE,
+        clearable=FALSE,
+        style=list('height'= '30px', 'width'= '250px')
+      )      
       )
     ))
   )),
@@ -182,7 +202,6 @@ app$callback(
        input('state_selector', 'value')),
   function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
-                                  # state == state_chosen &
                                   Gender %in% gender_chosen &
                                   self_employed %in% self_emp_chosen &
                                   (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
@@ -190,7 +209,7 @@ app$callback(
       aes(y = benefits) +
       geom_bar(color = '#2166AC', fill = '#497EE8') +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
-    ggplotly(p)
+    ggplotly(p, tooltip = 'count')
   }
 )
 
@@ -203,7 +222,6 @@ app$callback(
        input('state_selector', 'value')),
   function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] &
-                             # state == state_chosen &
                              Gender %in% gender_chosen &
                              self_employed %in% self_emp_chosen  &
                                   (    state_chosen == 'ALL' |  state %in% state_chosen) )) +
@@ -213,6 +231,30 @@ app$callback(
       labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
     
     ggplotly(p)
+  }
+)
+
+#Second Tab Facetted Barplot
+app$callback(
+  output('facet_barplot_1', 'figure'),
+  list(input('age-range-slider', 'value'),       
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value'),
+       input('state_selector', 'value')
+       ),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
+    p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+                                  Gender %in% gender_chosen &
+                                  self_employed %in% self_emp_chosen &
+                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
+    )) +
+      aes(y = wellness_program, fill = age_group) + 
+      geom_bar() + 
+      facet_wrap(~age_group, ncol = 4) + 
+      labs(x = '', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
+      theme(legend.position = 'none')
+    
+    ggplotly(p, tooltip = 'count')
   }
 )
 
