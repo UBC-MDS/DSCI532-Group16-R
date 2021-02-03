@@ -5,6 +5,7 @@ library(dashBootstrapComponents)
 library(ggplot2)
 library(tidyverse)
 library(plotly)
+library(ggthemes)
 
 
 app <- Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
@@ -267,7 +268,8 @@ app$callback(
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
-      theme(legend.position = 'none')
+      theme(legend.position = 'none') +
+      ggthemes::scale_fill_tableau()
     
     #Resolve the x axis overlapping facet tick issue - Remove if Count of Records is not necessary in this plot
     gp <- ggplotly(p, tooltip = 'count')
@@ -299,7 +301,8 @@ app$callback(
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
-      theme(legend.position = 'none')
+      theme(legend.position = 'none') + 
+      ggthemes::scale_fill_tableau()
     
     #Resolve the x axis overlapping facet tick issue
     gp <- ggplotly(p, tooltip = 'count')
