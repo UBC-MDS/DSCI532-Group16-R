@@ -109,13 +109,12 @@ CONTENT_STYLE <- list(
 content <- htmlDiv(list(
   htmlH2('Employee Mental Health Survey in the US'),
   htmlBr(),
-  dccTabs(id="tabs", children=list(
-    dccTab(label='Employee perception', children=list(
-      htmlBr(),
-      htmlBr(),
-      # Map figure
-      dccGraph(id='map-plot'),
-
+  # Map figure
+  dccGraph(id='map-plot'),
+  htmlBr(),
+  dbcTabs(id="tabs", children=list(
+    dbcTab(label='Employee perception', children=list(
+      
       # Options Bar Plot
       dccGraph(id = 'option_bar_plot', style=list('height'=250, 'width'= 900, 'margin' = 100)),
 
@@ -123,10 +122,9 @@ content <- htmlDiv(list(
       dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
         )
     ),
-    dccTab(label='Employer support', children=list(     
+    dbcTab(label='Employer support', children=list(     
       htmlBr(),
       htmlBr(),
-      
       # Facet Dropdown button
       htmlH3('View results by:'),
       dccDropdown(
@@ -163,6 +161,8 @@ app$layout(htmlDiv(
  
 ))
 
+
+#Map callback
 app$callback(
   output('map-plot', 'figure'),
   list(input('age-range-slider', 'value'),
@@ -200,13 +200,17 @@ app$callback(
   list(input('age-range-slider', 'value'),       
        input('gender_checklist', 'value'),
        input('self_emp_checklist', 'value'),
-       input('state_selector', 'value')),
-  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
+       input('state_selector', 'value'),
+       input('map-plot', 'selectedData')),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, selected_data) {
+    
+    map_clicks <- selected_data[[1]] %>% purrr:::map_chr('location')
+    
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                   Gender %in% gender_chosen &
                                   self_employed %in% self_emp_chosen &
-                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
-                                  )) +
+                                  ((state_chosen == 'ALL' | state %in% state_chosen) & 
+                                     ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(y = benefits) +
       geom_bar(color = '#2166AC', fill = '#497EE8') +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
@@ -220,12 +224,17 @@ app$callback(
   list(input('age-range-slider', 'value'),       
        input('gender_checklist', 'value'),
        input('self_emp_checklist', 'value'),
-       input('state_selector', 'value')),
-  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
+       input('state_selector', 'value'),
+       input('map-plot', 'selectedData')),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, selected_data) {
+    
+    map_clicks <- selected_data[[1]] %>% purrr:::map_chr('location')
+    
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] &
                              Gender %in% gender_chosen &
                              self_employed %in% self_emp_chosen  &
-                                  (    state_chosen == 'ALL' |  state %in% state_chosen) )) +
+                               ((state_chosen == 'ALL' | state %in% state_chosen) & 
+                                  ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(x = supervisor, y = Age) +
       geom_boxplot(color = '#2166AC', fill = '#497EE8') +
       coord_flip() +
@@ -243,14 +252,18 @@ app$callback(
        input('gender_checklist', 'value'),
        input('self_emp_checklist', 'value'),
        input('state_selector', 'value'),
-       input('facet_selector', 'value')
+       input('facet_selector', 'value'),
+       input('map-plot', 'selectedData')
        ),
-  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen) {
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen, selected_data) {
+    
+    map_clicks <- selected_data[[1]] %>% purrr:::map_chr('location')
+    
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                   Gender %in% gender_chosen &
                                   self_employed %in% self_emp_chosen &
-                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
-    )) +
+                                  ((state_chosen == 'ALL' | state %in% state_chosen) & 
+                                     ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes_string(y = 'wellness_program', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
@@ -268,14 +281,18 @@ app$callback(
        input('gender_checklist', 'value'),
        input('self_emp_checklist', 'value'),
        input('state_selector', 'value'),
-       input('facet_selector', 'value')
+       input('facet_selector', 'value'),
+       input('map-plot', 'selectedData')
   ),
-  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen) {
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen, selected_data) {
+    
+    map_clicks <- selected_data[[1]] %>% purrr:::map_chr('location')
+    
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                   Gender %in% gender_chosen &
                                   self_employed %in% self_emp_chosen &
-                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
-    )) +
+                                  ((state_chosen == 'ALL' | state %in% state_chosen) 
+                                   & ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes_string(y = 'seek_help', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
