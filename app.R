@@ -127,10 +127,7 @@ content <- htmlDiv(list(
       htmlBr(),
       htmlBr(),
       
-      #Facet Plot
-      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 1200, 'margin' = 100)),
-      
-      
+      # Facet Dropdown button
       htmlH3('View results by:'),
       dccDropdown(
         id = 'facet_selector',
@@ -138,12 +135,16 @@ content <- htmlDiv(list(
           list(label = 'Age', value = 'age_group'),
           list(label = 'Gender', value = 'Gender'),
           list(label = 'Self-Employed', value = 'self_employed')
-          ),
+        ),
         value='age_group', 
         multi=FALSE,
         clearable=FALSE,
-        style=list('height'= '30px', 'width'= '250px')
-      )      
+        style=list('height'= '30px', 'width'= '250px')),
+      
+      #Facet Plots
+      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 1200, 'margin' = 100)),
+      dccGraph(id = 'facet_barplot_2', style=list('height'=250, 'width'= 1200, 'margin' = 100))
+      
       )
     ))
   )),
@@ -234,24 +235,51 @@ app$callback(
   }
 )
 
-#Second Tab Facetted Barplot
+##### Second Tab Callbacks
+# Facetted Barplot 1
 app$callback(
   output('facet_barplot_1', 'figure'),
   list(input('age-range-slider', 'value'),       
        input('gender_checklist', 'value'),
        input('self_emp_checklist', 'value'),
-       input('state_selector', 'value')
+       input('state_selector', 'value'),
+       input('facet_selector', 'value')
        ),
-  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen) {
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen) {
     p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
                                   Gender %in% gender_chosen &
                                   self_employed %in% self_emp_chosen &
                                   (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
     )) +
-      aes(y = wellness_program, fill = age_group) + 
+      aes_string(y = 'wellness_program', fill = facet_chosen) + 
       geom_bar() + 
-      facet_wrap(~age_group, ncol = 4) + 
+      facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = '', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
+      theme(legend.position = 'none')
+    
+    ggplotly(p, tooltip = 'count')
+  }
+)
+
+#Facetted Barplot 2
+app$callback(
+  output('facet_barplot_2', 'figure'),
+  list(input('age-range-slider', 'value'),       
+       input('gender_checklist', 'value'),
+       input('self_emp_checklist', 'value'),
+       input('state_selector', 'value'),
+       input('facet_selector', 'value')
+  ),
+  function(age_chosen, gender_chosen, self_emp_chosen, state_chosen, facet_chosen) {
+    p <- ggplot(data %>% filter(Age >= age_chosen[1] & Age <= age_chosen[2] & 
+                                  Gender %in% gender_chosen &
+                                  self_employed %in% self_emp_chosen &
+                                  (    state_chosen == 'ALL' |  state %in% state_chosen)                                  
+    )) +
+      aes_string(y = 'seek_help', fill = facet_chosen) + 
+      geom_bar() + 
+      facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
+      labs(x = '', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
       theme(legend.position = 'none')
     
     ggplotly(p, tooltip = 'count')
