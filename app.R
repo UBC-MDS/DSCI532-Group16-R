@@ -111,7 +111,6 @@ content <- htmlDiv(list(
   htmlBr(),
   # Map figure
   dccGraph(id='map-plot'),
-  htmlBr(),
   dbcTabs(id="tabs", children=list(
     dbcTab(label='Employee perception', children=list(
       
