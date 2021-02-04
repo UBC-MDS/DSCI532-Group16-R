@@ -22,6 +22,20 @@ There are two suggested ways to run this analysis:
 This dashboard is hosted on Heroku: https://it-mental-health-dash-r.herokuapp.com/ 
 The heroku repository URL is: https://git.heroku.com/it-mental-health-dash-r.git
 
+
+#### Trigger Auto-Deployment by pushing to deployment branch
+Once you've cloned this github repository, you can do the following from the root of the repo:
+```bash
+git status
+git pull upstream main  #Get latest
+
+#Make any final changes, ex. disabling debug mode
+git add .
+git commit -m "change description"
+git push heroku deployment
+
+```
+
 #### Deploy on to your own Heroku Account
 Once you've cloned this github repository, you can do the following from the root of the repo:
 ```bash
