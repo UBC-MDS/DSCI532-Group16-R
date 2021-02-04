@@ -311,4 +311,4 @@ app$callback(
   }
 )
 
-app$run_server(debug = T, host='0.0.0.0')
+app$run_server(debug = F, host='0.0.0.0')
