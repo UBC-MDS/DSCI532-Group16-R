@@ -1,4 +1,5 @@
 # Mental Health Awareness Dashboard
+Deployment on Heroku: https://it-mental-health-dash-r.herokuapp.com/
 
 ![app sketch](images/app_sketch_v1.png)
 
