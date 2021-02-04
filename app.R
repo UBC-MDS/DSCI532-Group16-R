@@ -212,7 +212,7 @@ app$callback(
                                   ((state_chosen == 'ALL' | state %in% state_chosen) & 
                                      ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(y = benefits) +
-      geom_bar(color = '#2166AC', fill = '#3E60A4') +
+      geom_bar(fill = '#3E60A4AA') +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
     ggplotly(p, tooltip = 'count')
   }
@@ -236,7 +236,7 @@ app$callback(
                                ((state_chosen == 'ALL' | state %in% state_chosen) & 
                                   ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(x = supervisor, y = Age) +
-      geom_boxplot(color = '#2166AC', fill = '#3E60A4') +
+      geom_boxplot(color = '#2166AC', fill = '#3E60A4AA') +
       coord_flip() +
       labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
     
@@ -269,7 +269,7 @@ app$callback(
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
       theme(legend.position = 'none') +
-      ggthemes::scale_fill_tableau()
+      scale_fill_brewer(palette = "Accent")
     
     #Resolve the x axis overlapping facet tick issue - Remove if Count of Records is not necessary in this plot
     gp <- ggplotly(p, tooltip = 'count')
@@ -301,8 +301,8 @@ app$callback(
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
-      theme(legend.position = 'none') + 
-      ggthemes::scale_fill_tableau()
+      theme(legend.position = 'none') +
+      scale_fill_brewer(palette = "Accent") 
     
     #Resolve the x axis overlapping facet tick issue
     gp <- ggplotly(p, tooltip = 'count')
