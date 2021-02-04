@@ -64,7 +64,7 @@ Rscript app.R
 
 ### R
 
-We are providing you with the R packages that must be installed 
+Below are the R packages that must be installed 
 
 - dash
 - readr
@@ -72,8 +72,10 @@ We are providing you with the R packages that must be installed
 - ggthemes
 - tidyverse
 - remotes
+- plotly
 
 Then via remotes,
 ```
 remotes::install_github('facultyai/dash-bootstrap-components@r-release')
+install_github("plotly/dashR", upgrade=TRUE)
 ```
