@@ -122,8 +122,7 @@ content <- htmlDiv(list(
       dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
         )
     ),
-    dbcTab(label='Employer support', children=list(     
-      htmlBr(),
+    dbcTab(label='Employer support', children=list(           
       htmlBr(),
       # Facet Dropdown button
       htmlH3('View survey results by:'),
@@ -140,8 +139,8 @@ content <- htmlDiv(list(
         style=list('height'= '30px', 'width'= '250px')),
       
       #Facet Plots
-      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 1200, 'margin' = 100)),
-      dccGraph(id = 'facet_barplot_2', style=list('height'=250, 'width'= 1200, 'margin' = 100))
+      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 900, 'margin' = 100)),
+      dccGraph(id = 'facet_barplot_2', style=list('height'=250, 'width'= 900, 'margin' = 100))
       
       )
     ))
@@ -185,11 +184,13 @@ app$callback(
     frequencydf <- left_join(statedf, grouped_data, by = 'code')
 
     # Plot map
-    p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states',
-                 z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%
-                layout(geo = list(scope = 'usa', projection = list(type = 'albers usa')), 
-                title = paste(str(state_chosen),'Frequency of mental health condition'), clickmode = 'event+select')
-    
+    p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states', 
+                 z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%                 
+                layout( geo = list(scope = 'usa', projection = list(type = 'albers usa')),                                   
+                  title = paste(str(state_chosen),'Frequency of mental health condition'), 
+                clickmode = 'event+select')
+    p <- p %>% colorbar(title = "Count of employees \nwith mental health issue(s)")                
+        
     ggplotly(p)
   }
 )
