@@ -122,8 +122,7 @@ content <- htmlDiv(list(
       dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
         )
     ),
-    dbcTab(label='Employer support', children=list(     
-      htmlBr(),
+    dbcTab(label='Employer support', children=list(           
       htmlBr(),
       # Facet Dropdown button
       htmlH3('View survey results by:'),
@@ -140,8 +139,8 @@ content <- htmlDiv(list(
         style=list('height'= '30px', 'width'= '250px')),
       
       #Facet Plots
-      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 1200, 'margin' = 100)),
-      dccGraph(id = 'facet_barplot_2', style=list('height'=250, 'width'= 1200, 'margin' = 100))
+      dccGraph(id = 'facet_barplot_1', style=list('height'=250, 'width'= 900, 'margin' = 100)),
+      dccGraph(id = 'facet_barplot_2', style=list('height'=250, 'width'= 900, 'margin' = 100))
       
       )
     ))
@@ -185,11 +184,13 @@ app$callback(
     frequencydf <- left_join(statedf, grouped_data, by = 'code')
 
     # Plot map
-    p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states',
-                 z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%
-                layout(geo = list(scope = 'usa', projection = list(type = 'albers usa')), 
-                title = paste(str(state_chosen),'Frequency of mental health condition'), clickmode = 'event+select')
-    
+    p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states', 
+                 z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%                 
+                layout( geo = list(scope = 'usa', projection = list(type = 'albers usa')),                                   
+                  title = paste(str(state_chosen),'Frequency of mental health condition'), 
+                clickmode = 'event+select')
+    p <- p %>% colorbar(title = "Count of employees \nwith mental health issue(s)")                
+        
     ggplotly(p)
   }
 )
@@ -212,7 +213,7 @@ app$callback(
                                   ((state_chosen == 'ALL' | state %in% state_chosen) & 
                                      ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(y = benefits) +
-      geom_bar(color = '#2166AC', fill = '#3E60A4') +
+      geom_bar(fill = '#3E60A4AA') +
       labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
     ggplotly(p, tooltip = 'count')
   }
@@ -236,7 +237,7 @@ app$callback(
                                ((state_chosen == 'ALL' | state %in% state_chosen) & 
                                   ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(x = supervisor, y = Age) +
-      geom_boxplot(color = '#2166AC', fill = '#3E60A4') +
+      geom_boxplot(color = '#2166AC', fill = '#3E60A4AA') +
       coord_flip() +
       labs(x = "", title = "Would employee be willing to discuss mental health issues with supervisor?") 
     
@@ -269,7 +270,7 @@ app$callback(
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
       theme(legend.position = 'none') +
-      ggthemes::scale_fill_tableau()
+      scale_fill_brewer(palette = "Accent")
     
     #Resolve the x axis overlapping facet tick issue - Remove if Count of Records is not necessary in this plot
     gp <- ggplotly(p, tooltip = 'count')
@@ -301,8 +302,8 @@ app$callback(
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
       labs(x = 'Count of Records', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
-      theme(legend.position = 'none') + 
-      ggthemes::scale_fill_tableau()
+      theme(legend.position = 'none') +
+      scale_fill_brewer(palette = "Accent") 
     
     #Resolve the x axis overlapping facet tick issue
     gp <- ggplotly(p, tooltip = 'count')
