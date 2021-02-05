@@ -8,7 +8,7 @@ library(plotly)
 library(ggthemes)
 
 
-app <- Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
+app <- Dash$new( external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
 
 
 data = read_csv('data/processed/processed_survey.csv')
@@ -88,9 +88,8 @@ sidebar <- htmlDiv(list(
               id = 'self_emp_checklist',
               options = list(
                   list('label' = ' Yes', 'value' = 'Yes'),
-                  list('label' = ' No', 'value' = 'No'),
-                  list('label' = ' N/A', 'value' = 'N/A')),
-              value = list('Yes', 'No', 'N/A'),            
+                  list('label' = ' No', 'value' = 'No')),
+              value = list('Yes', 'No'),            
               labelStyle = list('display'='block')
               
           ),          
@@ -104,14 +103,14 @@ sidebar <- htmlDiv(list(
 CONTENT_STYLE <- list(
     'margin-left'="18rem",
     'margin-right'="2rem",
-    'padding'="2rem 1rem"
+    'padding'="2rem 1rem"    
 )
 
 content <- htmlDiv(list(
   htmlH2('Employee Mental Health Survey in the US'),
   htmlBr(),
   # Map figure
-  dccGraph(id='map-plot'),
+  dccGraph(id='map-plot'),  
   dbcTabs(id="tabs", children=list(
     dbcTab(label='Employee perception', children=list(
       
@@ -120,7 +119,7 @@ content <- htmlDiv(list(
 
       # Discuss mental issues Bar Plot
       dccGraph(id = 'discuss_w_supervisor', style=list('height'=250, 'width'= 900, 'margin' = 100))
-        )
+        )     
     ),
     dbcTab(label='Employer support', children=list(           
       htmlBr(),
@@ -149,16 +148,17 @@ content <- htmlDiv(list(
 )
 
 #Main Layout
-app$layout(htmlDiv(
+app$layout(
     
-    list(
-    #side bar div
-    sidebar,
-    #content div
-    content
-    )
- 
-))
+    htmlDiv(
+    
+      list(
+      #side bar div
+      sidebar,
+      #content div
+      content
+      ) 
+  ))
 
 
 #Map callback
@@ -180,16 +180,18 @@ app$callback(
     colnames(filtered_data)[6] <- "code"
     grouped_data <- filtered_data %>%
       group_by(code) %>%
-      summarize(mental_health_condition = sum(has_condition))
+      summarize(mental_health_condition = n())
     frequencydf <- left_join(statedf, grouped_data, by = 'code')
 
     # Plot map
     p <- plot_ly(frequencydf, type = 'choropleth', locationmode = 'USA-states', 
                  z = ~mental_health_condition, locations = ~code, color = ~mental_health_condition, colors = 'PuBu') %>%                 
                 layout( geo = list(scope = 'usa', projection = list(type = 'albers usa')),                                   
-                  title = paste(str(state_chosen),'Frequency of mental health condition'), 
+                  title = paste(str(state_chosen),'Survey Participation by State'), 
                 clickmode = 'event+select')
-    p <- p %>% colorbar(title = "Count of employees \nwith mental health issue(s)")                
+    p <- p %>% colorbar(title = "Survey Count")  
+      
+    
         
     ggplotly(p)
   }
@@ -214,7 +216,7 @@ app$callback(
                                      ( length(map_clicks) == 0 | state %in% map_clicks)))) +
       aes(y = benefits) +
       geom_bar(fill = '#3E60A4AA') +
-      labs(x = 'Count of Records', y = '', title = 'Do you know know the options for mental healthcare your employer provides?')
+      labs(x = 'Count of Records', y = '', title = 'Do you know the options for mental healthcare your employer provides?')
     ggplotly(p, tooltip = 'count')
   }
 )
@@ -301,7 +303,7 @@ app$callback(
       aes_string(y = 'seek_help', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
-      labs(x = 'Count of Records', y = '', title = 'Does your employer provide resources to learn more about mental health issues and how to seek help?') + 
+      labs(x = 'Count of Records', y = '', title = 'Does employer provide resources to learn about mental health issues & how to seek help?') + 
       theme(legend.position = 'none') +
       scale_fill_brewer(palette = "Accent") 
     
