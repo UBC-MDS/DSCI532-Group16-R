@@ -17,7 +17,7 @@ The age, gender and self-employed filters are used as callbacks for the map. All
 
 ### Experience Implementing in R
 
--   Integration with Dash and R seemed more refined than that with Dash and Altair. We also found that the visualizations looked much better in the R implementation which is why we decided to proceed using R for our final version of the app rather than Python. 
+Integration with Dash and R seemed more refined than that with Dash and Altair. We also found that the visualizations looked much better in the R implementation which is why we decided to proceed using R for our final version of the app rather than Python. 
 
 ### Thoughts on Feedback
 
@@ -25,7 +25,7 @@ Most of the feedback receieved from instructors and peers focused on the finer s
 
   - Age slider values not evenly spaced out
   - Unclear legend titles
-   - Second tab of the app being empty
+  - Second tab of the app being empty
         
 Overall feedback on the app was positive as it was functional and easy to use. The feedback was very constructive and we addressed the issues in our app for this final milestone. 
 
