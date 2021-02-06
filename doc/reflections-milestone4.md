@@ -23,9 +23,9 @@ The age, gender and self-employed filters are used as callbacks for the map. All
 
 Most of the feedback receieved from instructors and peers focused on the finer styling issues. Some of this was fixed earlier, as noted in our Milestone 3 reflection, automatically through implementation in R. Some feedback about the earlier versions of our app include:
 
-        - Age slider values not evenly spaced out
-        - Unclear legend titles
-        - Second tab of the app being empty
+  - Age slider values not evenly spaced out
+  - Unclear legend titles
+   - Second tab of the app being empty
         
 Overall feedback on the app was positive as it was functional and easy to use. The feedback was very constructive and we addressed the issues in our app for this final milestone. 
 
@@ -33,9 +33,9 @@ Overall feedback on the app was positive as it was functional and easy to use. T
 
 Some of the notable updates to our app in this milestone include:
 
-        - Added visualizations and dropdown to the previously empty Employer support tab
-        - Moved our map visualization outside of the tabs so that it can serve as a filter for both tabs
-        - Fixed minor styling issues (legend names, slider value space etc.)
+   - Added visualizations and dropdown to the previously empty Employer support tab
+   - Moved our map visualization outside of the tabs so that it can serve as a filter for both tabs
+   - Fixed minor styling issues (legend names, slider value space etc.)
 
 ### App Strengths and Limitations
 
