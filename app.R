@@ -8,8 +8,9 @@ library(plotly)
 library(ggthemes)
 
 
-app <- Dash$new( external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
+app = Dash$new(external_stylesheets = 'https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css')
 
+app$title("Employee Mental Health in the US")
 
 data = read_csv('data/processed/processed_survey.csv')
 statedf <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
@@ -270,13 +271,16 @@ app$callback(
       aes_string(y = 'wellness_program', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
-      labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee wellness program?') + 
+      labs(x = 'Count of Records', y = '', title = 'Has your employer ever discussed mental health as part of an employee \nwellness program?') + 
       theme(legend.position = 'none') +
       scale_fill_brewer(palette = "Accent")
     
-    #Resolve the x axis overlapping facet tick issue - Remove if Count of Records is not necessary in this plot
+    #Resolve the x axis overlapping facet tick issue 
     gp <- ggplotly(p, tooltip = 'count')
-    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.15
+    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.2
+    gp[['x']][['layout']][['title']][['y']] <-  0.90
+    gp <- layout(gp, margin=list(t = 90, b = 10))
+    
     gp
   }
 )
@@ -303,13 +307,16 @@ app$callback(
       aes_string(y = 'seek_help', fill = facet_chosen) + 
       geom_bar() + 
       facet_wrap(as.formula(paste('~', facet_chosen)), ncol = 4) + 
-      labs(x = 'Count of Records', y = '', title = 'Does employer provide resources to learn about mental health issues & how to seek help?') + 
+      labs(x = 'Count of Records', y = '', title = 'Does employer provide resources to learn about mental health issues \n& how to seek help?') + 
       theme(legend.position = 'none') +
       scale_fill_brewer(palette = "Accent") 
     
     #Resolve the x axis overlapping facet tick issue
     gp <- ggplotly(p, tooltip = 'count')
-    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.15
+    gp[['x']][['layout']][['annotations']][[1]][['y']] <- -0.2
+    
+    gp[['x']][['layout']][['title']][['y']] <-  0.90
+    gp <- layout(gp, margin=list(t = 90))
     gp
   }
 )
