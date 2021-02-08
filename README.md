@@ -1,7 +1,7 @@
 # Mental Health Awareness Dashboard
 Deployment on Heroku: https://it-mental-health-dash-r.herokuapp.com/
 
-![app demo](images/app_showcase_demo.gif)
+![app demo](images/app_showcase_demo_low_res.gif)
 
 The app is a dashboard to more efficiently consume the [mental illness survey data](https://www.kaggle.com/osmi/mental-health-in-tech-survey) and drive insights into different areas of mental illness awareness in tech companies around the world. After landing on this dashboard, users can filter generic company, employee and mental health related filters on the left hand side. For example, they can filter by region and age group. The filtering will then drive the visualizations on the tabbed right side of the app.
 
